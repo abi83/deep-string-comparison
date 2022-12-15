@@ -7,8 +7,7 @@
   "scripts": {
     "test": "npx jest --config test/jest.config.ts",
     "build": "npx tsc",
-    "index": "node --loader ts-node/esm src/index.ts --es-module-specifier-resolution=node",
-    "graph": "node --loader ts-node/esm src/graph.ts --es-module-specifier-resolution=node"
+    "index": "node --loader ts-node/esm src/index.ts --es-module-specifier-resolution=node"
   },
   "keywords": [
     "String",

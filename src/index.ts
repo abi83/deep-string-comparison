@@ -4,11 +4,16 @@ type SingleDiff = {
   value: string,
   type: DiffTypes
 }
-type GroupedDiff = {
+export type GroupedDiff = {
   from: number;
   to: number;
   type: DiffTypes
   value: string
+}
+
+export type Output = {
+  aDiffs: GroupedDiff[],
+  bDiffs: GroupedDiff[]
 }
 
 export interface BaseNode {
@@ -236,7 +241,7 @@ export class StringComparer extends Tree<Node> {
     groupedADiffs.push({ ...currentDiff })
     return groupedADiffs
   }
-  buildDiffs(): {aDiffs: GroupedDiff[], bDiffs: GroupedDiff[]} {
+  buildDiffs(): Output {
     this.buildTreeOfEqualSymbols()
     this.markNotChangedSymbols()
     this.markMovedSymbols()
