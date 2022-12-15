@@ -1,0 +1,30 @@
+{
+  "name": "deep-string-comparison",
+  "version": "0.0.1",
+  "description": "Some utils to compare two strings and calculate added, moved or removed parts",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "npx jest --config test/jest.config.ts",
+    "build": "npx tsc",
+    "index": "node --loader ts-node/esm src/index.ts --es-module-specifier-resolution=node",
+    "graph": "node --loader ts-node/esm src/graph.ts --es-module-specifier-resolution=node"
+  },
+  "keywords": [
+    "String",
+    "Compare"
+  ],
+  "author": "Vladimir Kromm",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "@types/node": "^18.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "eslint-plugin-jest": "^26.8.7",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4"
+  }
+}
