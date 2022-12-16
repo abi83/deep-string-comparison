@@ -1,19 +1,19 @@
 import { BaseNode } from './tree.types'
 
 export type DiffTypes = 'moved' | 'not_moved' | 'deleted' | 'added'
-export type SingleDiff = {
+export type Diff = {
   index: number,
   value: string,
   type: DiffTypes
 }
-export type GroupedDiff = {
+export interface GroupedDiff {
   from: number;
   to: number;
   type: DiffTypes
   value: string
 }
 
-export type Output = {
+export interface StringDiffs {
   aDiffs: GroupedDiff[],
   bDiffs: GroupedDiff[]
 }
@@ -25,6 +25,6 @@ export interface Node extends BaseNode {
     indexA: number,
     indexB: number,
     processed: boolean
-    value?: string,
+    value: string,
   }
 }

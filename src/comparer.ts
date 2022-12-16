@@ -1,15 +1,23 @@
 import { Tree } from './tree'
 import { Tuple } from './tuple'
-import { GroupedDiff, Output, Node, SingleDiff } from './comparer.types'
+import { GroupedDiff, StringDiffs, Node, Diff } from './comparer.types'
 
+/**
+ * Compares two strings, and returns symbol by symbol diffs.
+ *  Get started:
+ *
+ *    cons comparer = new StringComparer('string one', 'string two')
+ *    comparer.getDiffs()
+ *
+ * Algorithm complexity: O(n^2), where n is string length
+ */
 export class StringComparer extends Tree<Node> {
-  readonly aString: string
-  readonly bString: string
-  private operationsCount = 0 // to count comparison complexity
-  notChangedDots: Set<string> = new Set()
-  movedDots: Set<string> = new Set()
+  private readonly aString: string
+  private readonly bString: string
+  private notChangedIndexPairs: Set<string> = new Set()
+  private movedIndexPairs: Set<string> = new Set()
 
-  constructor(a: string, b: string) {
+  constructor(aString: string, bString: string) {
     const rootNode:Node = {
       id: 0,
       depth: 0,
@@ -18,87 +26,124 @@ export class StringComparer extends Tree<Node> {
       payload: {
         indexA: -1,
         indexB: -1,
-        processed: false
+        processed: false,
+        value: ''
       }
     }
     super(rootNode)
-    this.aString = a
-    this.bString = b
+    this.aString = aString
+    this.bString = bString
   }
 
+  /**
+   * Returns the deepest node in the tree withing range.
+   * @param maxIndexA   limitation in aString
+   * @param maxIndexB   limitation in bString
+   */
   private getDeepestNodeInArea(maxIndexA: number, maxIndexB: number): Node {
     let nodeWithMaxDistance = this.rootNode
     this.forEach((node) => {
-      this.operationsCount++
-      if (node.payload.indexA >= maxIndexA || node.payload.indexB >= maxIndexB) return
+      if (
+        node.payload.indexA >= maxIndexA ||
+        node.payload.indexB >= maxIndexB
+      ) return
       if (node.depth > nodeWithMaxDistance.depth)
         nodeWithMaxDistance = node
     })
     return nodeWithMaxDistance
   }
 
-  private addNodeToTree(indexA: number, indexB: number): void {
+  /**
+   * Add node of equal symbols to a tree.
+   * Parent is the deepest node withing current index limitations
+   * Such a node, being the closest not changed symbol to the current one
+   * is a good candidate to build not changes symbols chain
+   * @param indexA  new node indexA
+   * @param indexB  new node indexA
+   * @param id      new node id
+   */
+  private addNodeToTree(indexA: number, indexB: number, id: number): void {
     const parentNode = this.getDeepestNodeInArea(indexA, indexB)
     const currentNode:Node = {
-      id: this.operationsCount,
+      id, parentNode,
       depth: parentNode.depth + 1,
-      parentNode,
       childNodes: [],
       payload: {
         indexA, indexB,
         processed: false,
-        value: this.aString[indexA]
+        value: this.aString[indexA] // which is equal to this.bString[indexB]
       }
     }
     parentNode.childNodes.push(currentNode)
   }
 
+  /**
+   * Loops through all combination of symbolA and symbolB.
+   * Adds a node to a tree, if symbols are equal
+   * The idea is to find the longest path of equal symbols (nodes)
+   */
   private buildTreeOfEqualSymbols() {
+    let n = 0
     for (let indexB = 0; indexB < this.bString.length; indexB++) {
       for (let indexA = 0; indexA < this.aString.length; indexA++) {
-        this.operationsCount++
-        if (this.aString[indexA] === this.bString[indexB]) {
-          this.addNodeToTree(indexA, indexB)
-        }
+        n++
+        if (this.aString[indexA] === this.bString[indexB])
+          this.addNodeToTree(indexA, indexB, n)
       }
     }
     return this.rootNode
   }
 
+  /**
+   * Deepest node represents the longest path of unique symbol pairs.
+   * Starting from deepest leafNode traversing to rootNode,
+   * the method stores all index pairs as 'notChanged'
+   */
   private markNotChangedSymbols() {
     const leafNode = this.getDeepestNode()
     this.forEachReversed((node) => {
-      this.operationsCount++
+      // todo: remove this after more tests done
       if (node.payload.indexA < 0 || node.payload.indexB < 0) return
-      const tuple = new Tuple(node.payload.indexA, node.payload.indexB)
-      this.notChangedDots.add(tuple.value)
+      const indexPair = new Tuple(node.payload.indexA, node.payload.indexB)
+      this.notChangedIndexPairs.add(indexPair.value)
     }, leafNode)
   }
+
+  /**
+   * All other nodes in the tree represents moved symbols
+   * Check if both of indexes in the pair are still not marked
+   * and stores such indexPair as 'moved'
+   */
   private markMovedSymbols() {
     this.forEach(node => {
       if (node.payload.processed) return
-      if (node.payload.indexA < 0 || node.payload.indexB < 0) return
-      const tuple = new Tuple(node.payload.indexA, node.payload.indexB)
-      for (const dot of this.notChangedDots) {
-        this.operationsCount++
-        const dotTuple = new Tuple(dot)
-        if (dotTuple.elements[0] === tuple.elements[0])
+      // todo: remove this after more tests done
+      // if (node.payload.indexA < 0 || node.payload.indexB < 0) return
+      const currentIndexes = new Tuple(node.payload.indexA, node.payload.indexB)
+      for (const notChangedIndexPair of this.notChangedIndexPairs) {
+        const notChangedIndexes = new Tuple(notChangedIndexPair)
+        //todo: user || here after more tests
+        if (notChangedIndexes.elements[0] === currentIndexes.elements[0])
           return
-        if (dotTuple.elements[1] === tuple.elements[1])
-          return
-      }
-      for (const dot of this.movedDots) {
-        this.operationsCount++
-        const dotTuple = new Tuple(dot)
-        if (dotTuple.elements[0] === tuple.elements[0])
-          return
-        if (dotTuple.elements[1] === tuple.elements[1])
+        if (notChangedIndexes.elements[1] === currentIndexes.elements[1])
           return
       }
-      this.movedDots.add(tuple.value)
+      for (const movedIndexPair of this.movedIndexPairs) {
+        const movedIndexes = new Tuple(movedIndexPair)
+        //todo: user || here after more tests
+        if (movedIndexes.elements[0] === currentIndexes.elements[0])
+          return
+        if (movedIndexes.elements[1] === currentIndexes.elements[1])
+          return
+      }
+      this.movedIndexPairs.add(currentIndexes.value)
     })
   }
-  private groupDiffs(linearDiffs: Array<SingleDiff>): GroupedDiff[] {
+
+  /**
+   * Group symbol-per-symbol diffs in groups
+   */
+  private groupDiffs(linearDiffs: Diff[]): GroupedDiff[] {
     const groupedADiffs: GroupedDiff[] = []
     let currentDiff: GroupedDiff = {
       from: linearDiffs[0].index,
@@ -109,7 +154,6 @@ export class StringComparer extends Tree<Node> {
 
     linearDiffs.forEach((dif, index) => {
       if (index === 0) return
-      this.operationsCount++
       if (dif.type === currentDiff.type) {
         currentDiff = {
           ...currentDiff,
@@ -129,18 +173,24 @@ export class StringComparer extends Tree<Node> {
     groupedADiffs.push({ ...currentDiff })
     return groupedADiffs
   }
-  private buildDiffs(): Output {
-    const aDiffs: Array<SingleDiff|undefined> = new Array(this.aString.length)
+
+  /**
+   * Build symbol per symbol diffs,
+   * by parsing 'notChangedIndexPairs' and 'movedIndexPairs'.
+   * All other indexes are marked as 'deleted' from aString
+   * and 'added' to bString
+   */
+  private buildDiffs(): StringDiffs {
+    const aDiffs: Array<Diff|undefined> = new Array(this.aString.length)
       .fill('')
       .map(() => undefined)
 
-    const bDiffs: Array<SingleDiff|undefined> = new Array(this.bString.length)
+    const bDiffs: Array<Diff|undefined> = new Array(this.bString.length)
       .fill('')
       .map(() => undefined)
 
-    this.notChangedDots.forEach((dot) => {
-      this.operationsCount++
-      const [ aIndex, bIndex ] = new Tuple(dot).elements
+    this.notChangedIndexPairs.forEach((indexPair) => {
+      const [ aIndex, bIndex ] = new Tuple(indexPair).elements
       aDiffs[aIndex] = {
         index: aIndex,
         value: this.aString[aIndex],
@@ -153,9 +203,8 @@ export class StringComparer extends Tree<Node> {
       }
     })
 
-    this.movedDots.forEach((dot) => {
-      this.operationsCount++
-      const [ aIndex, bIndex ] = new Tuple(dot).elements
+    this.movedIndexPairs.forEach((indexPair) => {
+      const [ aIndex, bIndex ] = new Tuple(indexPair).elements
       aDiffs[aIndex] = {
         index: aIndex,
         value: this.aString[aIndex],
@@ -167,23 +216,26 @@ export class StringComparer extends Tree<Node> {
         type: 'moved'
       }
     })
-    const fullDiffs__A: SingleDiff[] = aDiffs.map(
+    const fullDiffs__A: Diff[] = aDiffs.map(
       (dif, index) => dif === undefined
         ? { index, value: this.aString[index], type: 'deleted' }
         : dif
     )
-    const fullDiffs__B: SingleDiff[] = bDiffs.map(
+    const fullDiffs__B: Diff[] = bDiffs.map(
       (dif, index) => dif === undefined
         ? { index, value: this.bString[index], type: 'added' }
         : dif
     )
-
     return {
       aDiffs: this.groupDiffs(fullDiffs__A),
       bDiffs: this.groupDiffs(fullDiffs__B)
     }
   }
-  public getDiffs(): Output {
+
+  /**
+   * Call all calculations and return final diffs
+   */
+  public getDiffs(): StringDiffs {
     this.buildTreeOfEqualSymbols()
     this.markNotChangedSymbols()
     this.markMovedSymbols()

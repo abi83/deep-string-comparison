@@ -1,18 +1,24 @@
 import { BaseNode } from './tree.types'
 
 /**
- * Two ways binded
- * Undirected
- * Unweighted
- * Two dimensions
- *
+ * Very basic Tree class:
+ *  - two-way binding
+ *  - unlimited number of child nodes
+ *  - unweighted
+ * Recursion is used, which can be a limitation
  */
 export class Tree<TreeNode extends BaseNode> {
-  readonly rootNode: TreeNode
-  constructor(a: TreeNode) {
-    this.rootNode = a
+  protected readonly rootNode: TreeNode
+  constructor(rootNode: TreeNode) {
+    this.rootNode = rootNode
   }
-  forEach(
+
+  /**
+   * Calls callback for each node in preorder traversal.
+   * @param {Function}  callback    current node is the only argument
+   * @param {Object}   startNode    Optional. rootNode is default value
+   */
+  protected forEach(
     callback: (node: TreeNode) => void,
     startNode = this.rootNode
   ): void {
@@ -20,30 +26,45 @@ export class Tree<TreeNode extends BaseNode> {
     startNode.childNodes.forEach(child => this.forEach(callback, child as TreeNode))
   }
 
-  forEachReversed(
-    callback: (node: TreeNode)=>void,
+  /**
+   * Calls callback for leanNode and all parentNodes one by one
+   * @param {Function}  callback    current node is the only argument
+   * @param {Object}    leanNode    node to start traversal from
+   */
+  protected forEachReversed(
+    callback: (node: TreeNode) => void,
     leanNode: TreeNode
   ): void {
     callback(leanNode)
     if (leanNode.parentNode)
       this.forEachReversed(callback, leanNode.parentNode as TreeNode)
   }
-  getDeepestNode(): TreeNode {
-    const comparer = (node1:TreeNode, node2: TreeNode): number => {
-      return node2.depth - node1.depth
-    }
-    return this.getBestNode(comparer)
-  }
 
-  getBestNode(
-    comparer: (nodeA: TreeNode, nodeB: TreeNode)=>number
+  /**
+   * Get "best" node found by binary comparer callback
+   * @param {Function}  comparer  Function, that defines a sort order
+   *                              receives two nodes as args
+   */
+  protected getBestNode(
+    comparer: (nodeA: TreeNode, nodeB: TreeNode) => number
   ): TreeNode {
     const finder = (node: TreeNode): TreeNode => {
       if (node.childNodes.length === 0) return node
-      const allKids = node.childNodes.map(child => finder(child as TreeNode))
+      const allKids = node.childNodes
+        .map(child => finder(child as TreeNode))
       const kids = [ ...allKids, node ].sort(comparer)
       return kids[0]
     }
     return finder(this.rootNode)
+  }
+
+  /**
+   * Get node with max depth
+   */
+  protected getDeepestNode(): TreeNode {
+    const comparer = (node1:TreeNode, node2: TreeNode) => {
+      return node2.depth - node1.depth
+    }
+    return this.getBestNode(comparer)
   }
 }

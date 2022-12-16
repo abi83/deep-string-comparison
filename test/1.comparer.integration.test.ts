@@ -1,18 +1,18 @@
 import { StringComparer } from '../src'
-import { Output } from '../src'
+import { StringDiffs } from '../src'
 
 describe('Integration tests for StringComparer', () => {
   test('Same strings return empty diffs', () => {
     const comparer = new StringComparer('abc', 'abc')
-    const expected: Output = {
+    const expected: StringDiffs = {
       aDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }],
       bDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }]
     }
-    expect(comparer.buildDiffs()).toEqual(expected)
+    expect(comparer.getDiffs()).toEqual(expected)
   })
 
   test('Substring inside string marked as removed correctly', () => {
-    const result = new StringComparer('My ==removed part== string', 'My string').buildDiffs()
+    const result = new StringComparer('My ==removed part== string', 'My string').getDiffs()
     const expected_aDiffs = [
       { from: 0, to: 2, type: 'not_moved', value: 'My ' },
       { from: 3, to: 19, type: 'deleted', value: '==removed part== ' },
@@ -24,7 +24,7 @@ describe('Integration tests for StringComparer', () => {
   })
 
   test('Start substring removing indicates correctly', () => {
-    const result = new StringComparer('==removed part ==My string', 'My string').buildDiffs()
+    const result = new StringComparer('==removed part ==My string', 'My string').getDiffs()
     const expected_aDiffs = [
       { from: 0, to: 16, type: 'deleted', value: '==removed part ==' },
       { from: 17, to: 25, type: 'not_moved', value: 'My string' }
@@ -35,7 +35,7 @@ describe('Integration tests for StringComparer', () => {
   })
 
   test('End substring removing indicates correctly', () => {
-    const result = new StringComparer('My string==removed part ==', 'My string').buildDiffs()
+    const result = new StringComparer('My string==removed part ==', 'My string').getDiffs()
     const expected_aDiffs = [
       { from: 0, to: 8, type: 'not_moved', value: 'My string' },
       { from: 9, to: 25, type: 'deleted', value: '==removed part ==' }
