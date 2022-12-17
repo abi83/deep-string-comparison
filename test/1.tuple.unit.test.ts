@@ -13,7 +13,7 @@ describe('Uni tests for Tupple class', () => {
   })
 
   it('Should ignore third and all subsequent numbers on tuple creation', () => {
-    // @ts-ignore: test case
+    // @ts-expect-error
     const tupleOne = new Tuple(12, 34, 56)
     expect(tupleOne.value).toEqual(`12${EXPECTED_SEPARATOR}34`)
   })

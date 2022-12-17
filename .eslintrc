@@ -26,10 +26,6 @@
     "comma-spacing": ["error"],
     "comma-dangle": ["error", "never"],
     "no-multiple-empty-lines": ["error",{ "max": 1, "maxEOF": 0 }],
-    "max-len": ["error", { "code": 96 }],
-    "@typescript-eslint/ban-ts-comment": [
-      "error",
-      {"ts-ignore": "allow-with-description"}
-    ]
+    "max-len": ["error", { "code": 96 }]
   }
 }

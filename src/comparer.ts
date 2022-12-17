@@ -63,6 +63,7 @@ export class StringComparer extends Tree<Node> {
    * @param id      new node id
    */
   private addNodeToTree(indexA: number, indexB: number, id: number): void {
+    // todo: think about moving this to parent class
     const parentNode = this.getDeepestNodeInArea(indexA, indexB)
     const currentNode:Node = {
       id, parentNode,
