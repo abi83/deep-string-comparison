@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "npx jest --config test/jest.config.ts --coverage",
+    "test": "npx jest --config jest.config.ts --coverage",
     "build": "npx tsc"
   },
   "keywords": [

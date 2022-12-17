@@ -1,4 +1,4 @@
-import { Tuple } from '../src/tuple'
+import { Tuple } from './tuple'
 
 const EXPECTED_SEPARATOR = '__' //expected tuple value like "12__34"
 describe('Uni tests for Tupple class', () => {
@@ -13,7 +13,7 @@ describe('Uni tests for Tupple class', () => {
   })
 
   it('Should ignore third and all subsequent numbers on tuple creation', () => {
-    // @ts-expect-error
+    // @ts-expect-error: testing error path
     const tupleOne = new Tuple(12, 34, 56)
     expect(tupleOne.value).toEqual(`12${EXPECTED_SEPARATOR}34`)
   })

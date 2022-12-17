@@ -1,4 +1,4 @@
-import { BaseNode } from './tree.types'
+import { BaseNode } from './tree/tree.types'
 
 export type DiffTypes = 'moved' | 'not_moved' | 'deleted' | 'added'
 export type Diff = {
