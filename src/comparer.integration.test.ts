@@ -11,14 +11,23 @@ describe('Integration tests for StringComparer', () => {
     expect(diffs).toEqual(expected)
   })
 
+  it('Should not fall with empty strings', () => {
+    expect(() => {
+      new StringComparer('', '').getDiffs()
+      new StringComparer('a', '').getDiffs()
+      new StringComparer('', 'b').getDiffs()
+
+    }).not.toThrow()
+  })
+
   it('Should mark as "deleted" internal substring', () => {
     const result = new StringComparer(
       'My ==removed part== string',
       'My string').getDiffs()
     const expected_aDiffs = [
-      { from: 0, to: 1, type: 'not_moved', value: 'My' },
-      { from: 2, to: 18, type: 'deleted', value: ' ==removed part==' },
-      { from: 19, to: 25, type: 'not_moved', value: ' string' }
+      { from: 0, to: 2, type: 'not_moved', value: 'My ' },
+      { from: 3, to: 19, type: 'deleted', value: '==removed part== ' },
+      { from: 20, to: 25, type: 'not_moved', value: 'string' }
     ]
     expect(result.bDiffs.length).toEqual(1)
     expect(result.bDiffs[0].type).toEqual('not_moved')
@@ -56,9 +65,9 @@ describe('Integration tests for StringComparer', () => {
       'My ==removed part== string //second removed part//',
       'My string').getDiffs()
     const expectedDiffs = [
-      { from: 0, to: 1, type: 'not_moved', value: 'My' },
-      { from: 2, to: 18, type: 'deleted', value: ' ==removed part==' },
-      { from: 19, to: 25, type: 'not_moved', value: ' string' },
+      { from: 0, to: 2, type: 'not_moved', value: 'My ' },
+      { from: 3, to: 19, type: 'deleted', value: '==removed part== ' },
+      { from: 20, to: 25, type: 'not_moved', value: 'string' },
       { from: 26, to: 49, type: 'deleted', value: ' //second removed part//' }
     ]
     expect(result.aDiffs).toEqual(expectedDiffs)
@@ -69,16 +78,16 @@ describe('Integration tests for StringComparer', () => {
       'My custom string =moved= with cool content',
       'My custom string with cool =moved= content').getDiffs()
     const expected_aDiffs = [
-      { from: 0, to: 15, type: 'not_moved', value: 'My custom string' },
-      { from: 16, to: 23, type: 'moved', value: ' =moved=' },
-      { from: 24, to: 41, type: 'not_moved', value: ' with cool content' }
+      { from: 0, to: 16, type: 'not_moved', value: 'My custom string ' },
+      { from: 17, to: 24, type: 'moved', value: '=moved= ' },
+      { from: 25, to: 41, type: 'not_moved', value: 'with cool content' }
     ]
     expect(aDiffs).toEqual(expected_aDiffs)
     // second string
     expect(bDiffs.length).toEqual(3)
     expect(bDiffs[0].type).toEqual('not_moved')
     expect(bDiffs[1].type).toEqual('moved')
-    expect(bDiffs[0].type).toEqual('not_moved')
+    expect(bDiffs[2].type).toEqual('not_moved')
   })
 
   it('Should include all indexes in diffs for both strings', () => {

@@ -9,8 +9,10 @@ import { BaseNode } from './tree.types'
  */
 export class Tree<TreeNode extends BaseNode> {
   protected readonly rootNode: TreeNode
+  private nodeIds: Set<number> = new Set()
   constructor(rootNode: TreeNode) {
-    this.rootNode = rootNode
+    this.rootNode = { ...rootNode, id: 0 }
+    this.nodeIds.add(0)
   }
 
   /**
@@ -66,5 +68,28 @@ export class Tree<TreeNode extends BaseNode> {
       return node2.depth - node1.depth
     }
     return this.getBestNode(comparer)
+  }
+
+  private isNodeInTree(nodeId: number): boolean {
+    return this.nodeIds.has(nodeId)
+  }
+
+  protected createNewNode(
+    payload: TreeNode['payload'],
+    parentNode: TreeNode
+  ): void {
+    if (!this.isNodeInTree(parentNode.id)) {
+      throw new Error('ParentNode is not in tree')
+    }
+    const id = this.nodeIds.size
+    this.nodeIds.add(id)
+    const newNode = {
+      id,
+      parentNode,
+      depth: parentNode.depth + 1,
+      childNodes: [],
+      payload
+    }
+    parentNode.childNodes.push(newNode)
   }
 }

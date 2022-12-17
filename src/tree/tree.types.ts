@@ -3,4 +3,5 @@ export interface BaseNode {
   parentNode: BaseNode | null,
   childNodes: BaseNode[],
   depth: number,
+  payload: any
 }
