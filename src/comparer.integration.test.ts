@@ -1,4 +1,4 @@
-import { StringComparer } from './index'
+import { StringComparer } from './comparer'
 import { StringDiffs } from './index'
 
 describe('Integration tests for StringComparer', () => {

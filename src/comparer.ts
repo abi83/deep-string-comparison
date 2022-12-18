@@ -18,7 +18,7 @@ export class StringComparer extends Tree<Node> {
   private movedIndexPairs: Set<string> = new Set()
 
   constructor(aString: string, bString: string) {
-    const rootNode:Node = {
+    const rootNode: Node = {
       id: 0,
       depth: 0,
       parentNode: null,

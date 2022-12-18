@@ -11,7 +11,8 @@ export class Tree<TreeNode extends BaseNode> {
   protected readonly rootNode: TreeNode
   private nodeIds: Set<number> = new Set()
   constructor(rootNode: TreeNode) {
-    this.rootNode = { ...rootNode, id: 0 }
+    this.rootNode = rootNode
+    this.rootNode.id = 0
     this.nodeIds.add(0)
   }
 
@@ -20,7 +21,7 @@ export class Tree<TreeNode extends BaseNode> {
    * @param {Function}  callback    current node is the only argument
    * @param {Object}   startNode    Optional. rootNode is default value
    */
-  protected forEach(
+  forEach(
     callback: (node: TreeNode) => void,
     startNode = this.rootNode
   ): void {
@@ -33,7 +34,7 @@ export class Tree<TreeNode extends BaseNode> {
    * @param {Function}  callback    current node is the only argument
    * @param {Object}    leanNode    node to start traversal from
    */
-  protected forEachReversed(
+  forEachReversed(
     callback: (node: TreeNode) => void,
     leanNode: TreeNode
   ): void {
@@ -47,7 +48,7 @@ export class Tree<TreeNode extends BaseNode> {
    * @param {Function}  comparer  Function, that defines a sort order
    *                              receives two nodes as args
    */
-  protected getBestNode(
+  getBestNode(
     comparer: (nodeA: TreeNode, nodeB: TreeNode) => number
   ): TreeNode {
     const finder = (node: TreeNode): TreeNode => {
@@ -63,18 +64,18 @@ export class Tree<TreeNode extends BaseNode> {
   /**
    * Get node with max depth
    */
-  protected getDeepestNode(): TreeNode {
+  getDeepestNode(): TreeNode {
     const comparer = (node1:TreeNode, node2: TreeNode) => {
       return node2.depth - node1.depth
     }
     return this.getBestNode(comparer)
   }
 
-  private isNodeInTree(nodeId: number): boolean {
+  isNodeInTree(nodeId: number): boolean {
     return this.nodeIds.has(nodeId)
   }
 
-  protected createNewNode(
+  createNewNode(
     payload: TreeNode['payload'],
     parentNode: TreeNode
   ): void {
