@@ -103,7 +103,9 @@ export class StringComparer extends Tree<Node> {
    * This resolves part of the string in O(n), and improve overall performance
    * @return indexes from strings start and strings end to perform common Tree algorithm
    */
-  preliminaryCheck() {
+  preliminaryCheck()
+    :{ startIndex: number, endIndex: number }
+  {
     let startIndex, endIndex
     for (
       startIndex = 0;
@@ -247,12 +249,12 @@ export class StringComparer extends Tree<Node> {
       aDiffs[aIndex] = {
         index: aIndex,
         value: this.aString[aIndex],
-        type: 'not_moved'
+        type: 'not_changed'
       }
       bDiffs[bIndex] = {
         index: bIndex,
         value: this.bString[bIndex],
-        type: 'not_moved'
+        type: 'not_changed'
       }
     })
 

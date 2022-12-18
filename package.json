@@ -1,7 +1,7 @@
 {
   "name": "deep-string-comparison",
-  "version": "0.0.1",
-  "description": "Some utils to compare two strings and calculate added, moved or removed parts",
+  "version": "0.6.0",
+  "description": "A function to compare two strings and calculate diffs symbol by symbol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "npx jest --config jest.config.ts --coverage",
+    "test": "npx jest --coverage",
     "build": "npx tsc"
   },
   "keywords": [

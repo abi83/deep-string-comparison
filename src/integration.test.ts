@@ -6,12 +6,12 @@ describe('Integration tests for StringComparer', () => {
       'My ==removed part== string',
       'My string').getDiffs()
     const expected_aDiffs = [
-      { from: 0, to: 2, type: 'not_moved', value: 'My ' },
+      { from: 0, to: 2, type: 'not_changed', value: 'My ' },
       { from: 3, to: 19, type: 'deleted', value: '==removed part== ' },
-      { from: 20, to: 25, type: 'not_moved', value: 'string' }
+      { from: 20, to: 25, type: 'not_changed', value: 'string' }
     ]
     expect(result.bDiffs.length).toEqual(1)
-    expect(result.bDiffs[0].type).toEqual('not_moved')
+    expect(result.bDiffs[0].type).toEqual('not_changed')
     expect(result.aDiffs).toEqual(expected_aDiffs)
   })
 
@@ -21,10 +21,10 @@ describe('Integration tests for StringComparer', () => {
       'My string').getDiffs()
     const expected_aDiffs = [
       { from: 0, to: 15, type: 'deleted', value: '==removed part==' },
-      { from: 16, to: 24, type: 'not_moved', value: 'My string' }
+      { from: 16, to: 24, type: 'not_changed', value: 'My string' }
     ]
     expect(result.bDiffs.length).toEqual(1)
-    expect(result.bDiffs[0].type).toEqual('not_moved')
+    expect(result.bDiffs[0].type).toEqual('not_changed')
     expect(result.aDiffs).toEqual(expected_aDiffs)
   })
 
@@ -33,11 +33,11 @@ describe('Integration tests for StringComparer', () => {
       'My string==removed part==',
       'My string').getDiffs()
     const expected_aDiffs = [
-      { from: 0, to: 8, type: 'not_moved', value: 'My string' },
+      { from: 0, to: 8, type: 'not_changed', value: 'My string' },
       { from: 9, to: 24, type: 'deleted', value: '==removed part==' }
     ]
     expect(result.bDiffs.length).toEqual(1)
-    expect(result.bDiffs[0].type).toEqual('not_moved')
+    expect(result.bDiffs[0].type).toEqual('not_changed')
     expect(result.aDiffs).toEqual(expected_aDiffs)
   })
 
@@ -46,9 +46,9 @@ describe('Integration tests for StringComparer', () => {
       'My ==removed part== string //second removed part//',
       'My string').getDiffs()
     const expectedDiffs = [
-      { from: 0, to: 2, type: 'not_moved', value: 'My ' },
+      { from: 0, to: 2, type: 'not_changed', value: 'My ' },
       { from: 3, to: 19, type: 'deleted', value: '==removed part== ' },
-      { from: 20, to: 25, type: 'not_moved', value: 'string' },
+      { from: 20, to: 25, type: 'not_changed', value: 'string' },
       { from: 26, to: 49, type: 'deleted', value: ' //second removed part//' }
     ]
     expect(result.aDiffs).toEqual(expectedDiffs)
@@ -59,16 +59,16 @@ describe('Integration tests for StringComparer', () => {
       'My custom string =moved= with cool content',
       'My custom string with cool =moved= content').getDiffs()
     const expected_aDiffs = [
-      { from: 0, to: 16, type: 'not_moved', value: 'My custom string ' },
+      { from: 0, to: 16, type: 'not_changed', value: 'My custom string ' },
       { from: 17, to: 24, type: 'moved', value: '=moved= ' },
-      { from: 25, to: 41, type: 'not_moved', value: 'with cool content' }
+      { from: 25, to: 41, type: 'not_changed', value: 'with cool content' }
     ]
     expect(aDiffs).toEqual(expected_aDiffs)
     // second string
     expect(bDiffs.length).toEqual(3)
-    expect(bDiffs[0].type).toEqual('not_moved')
+    expect(bDiffs[0].type).toEqual('not_changed')
     expect(bDiffs[1].type).toEqual('moved')
-    expect(bDiffs[2].type).toEqual('not_moved')
+    expect(bDiffs[2].type).toEqual('not_changed')
   })
 
   it('Should include all indexes in diffs for both strings', () => {
@@ -156,10 +156,10 @@ describe('Integration tests for StringComparer', () => {
     const { aDiffs, bDiffs } = new StringComparer(a, b).getDiffs()
     expect(aDiffs.length).toBe(26)
     expect(bDiffs.length).toBe(5)
-    expect(aDiffs.filter(diff => diff.type === 'not_moved').length).toBe(9)
+    expect(aDiffs.filter(diff => diff.type === 'not_changed').length).toBe(9)
     expect(aDiffs.filter(diff => diff.type === 'moved').length).toBe(6)
     expect(aDiffs.filter(diff => diff.type === 'deleted').length).toBe(11)
-    expect(bDiffs.filter(diff => diff.type === 'not_moved').length).toBe(3)
+    expect(bDiffs.filter(diff => diff.type === 'not_changed').length).toBe(3)
     expect(bDiffs.filter(diff => diff.type === 'moved').length).toBe(2)
     expect(bDiffs.find(diff => diff.type === 'added')).not.toBeDefined()
 

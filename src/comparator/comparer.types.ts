@@ -1,6 +1,6 @@
 import { BaseNode } from '../tree/tree.types'
 
-export type DiffTypes = 'moved' | 'not_moved' | 'deleted' | 'added'
+export type DiffTypes = 'moved' | 'not_changed' | 'deleted' | 'added'
 export type Diff = {
   index: number,
   value: string,

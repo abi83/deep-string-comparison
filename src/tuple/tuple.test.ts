@@ -2,7 +2,7 @@ import { Tuple } from './tuple'
 import { ERROR_MESSAGES } from './tuple.literals'
 
 const EXPECTED_SEPARATOR = '__' //expected tuple value like "12__34"
-describe('Uni tests for Tupple class', () => {
+describe('Uni tests for Tuple class', () => {
   it('Should create a tuple from two numbers and return tuple value', () => {
     const tuple = new Tuple(12, 34)
     expect(tuple.value).toEqual(`12${EXPECTED_SEPARATOR}34`)

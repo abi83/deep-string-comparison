@@ -14,8 +14,8 @@ describe('Unit tests for comparer class', () => {
   it('Should return empty diffs for identical strings', () => {
     const diffs = new StringComparer('abc', 'abc').getDiffs()
     const expected = {
-      aDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }],
-      bDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }]
+      aDiffs: [{ from: 0, to: 2, type: 'not_changed', value: 'abc' }],
+      bDiffs: [{ from: 0, to: 2, type: 'not_changed', value: 'abc' }]
     }
     expect(diffs).toEqual(expected)
   })
@@ -233,9 +233,9 @@ describe('Unit tests for comparer class', () => {
     )
     const { aDiffs, bDiffs } = comparer.getDiffs()
     // unique substrings ('my', 'string', 'data')
-    expect(aDiffs.filter(diff => diff.type === 'not_moved').length).toBe(3)
-    expect(aDiffs.filter(diff => diff.type === 'not_moved').map(diff => diff.value))
-      .toEqual(bDiffs.filter(diff => diff.type === 'not_moved').map(diff => diff.value))
+    expect(aDiffs.filter(diff => diff.type === 'not_changed').length).toBe(3)
+    expect(aDiffs.filter(diff => diff.type === 'not_changed').map(diff => diff.value))
+      .toEqual(bDiffs.filter(diff => diff.type === 'not_changed').map(diff => diff.value))
 
     // moved substring 'test'
     expect(aDiffs.filter(diff => diff.type === 'moved').length).toBe(1)
