@@ -24,7 +24,6 @@ export interface Node extends BaseNode {
   payload: {
     indexA: number,
     indexB: number,
-    processed: boolean
     value: string,
   }
 }

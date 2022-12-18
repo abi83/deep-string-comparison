@@ -27,7 +27,6 @@ export class StringComparer extends Tree<Node> {
       payload: {
         indexA: -1,
         indexB: -1,
-        processed: false,
         value: ''
       }
     }
@@ -41,7 +40,7 @@ export class StringComparer extends Tree<Node> {
    * @param maxIndexA   limitation in aString
    * @param maxIndexB   limitation in bString
    */
-  private getDeepestNodeInArea(maxIndexA: number, maxIndexB: number): Node {
+  getDeepestNodeInArea(maxIndexA: number, maxIndexB: number): Node {
     const isNodeInRange = (node:Node, maxA:number, maxB:number): boolean => {
       return node.payload.indexA < maxA &&
              node.payload.indexB < maxB
@@ -86,14 +85,13 @@ export class StringComparer extends Tree<Node> {
    * @param indexA  new node indexA
    * @param indexB  new node indexA
    */
-  private storeEqualSymbols(indexA: number, indexB: number): void {
+  storeEqualSymbols(indexA: number, indexB: number): void {
     const parentNode = this.getDeepestNodeInArea(indexA, indexB)
     if(this.aString[indexA] !== this.bString[indexB]) {
       throw new Error(ERROR_MESSAGES.NOT_EQUAL_SYMBOLS)
     }
     const payload = {
       indexA, indexB,
-      processed: false,
       value: this.aString[indexA] // which is equal to this.bString[indexB]
     }
     this.createNewNode(payload, parentNode)
@@ -105,7 +103,7 @@ export class StringComparer extends Tree<Node> {
    * This resolves part of the string in O(n), and improve overall performance
    * @return indexes from strings start and strings end to perform common Tree algorithm
    */
-  private preliminaryCheck() {
+  preliminaryCheck() {
     let startIndex, endIndex
     for (
       startIndex = 0;
@@ -140,7 +138,7 @@ export class StringComparer extends Tree<Node> {
    * Adds a node to a tree, if symbols are equal
    * The idea is to find the longest path of equal symbols (nodes)
    */
-  private buildTreeOfEqualSymbols() {
+  buildTreeOfEqualSymbols() {
     // if strings have starting (ending) common substrings, start from there
     const { startIndex, endIndex } = this.preliminaryCheck()
     for (let indexB = startIndex; indexB < this.bString.length - endIndex; indexB++) {
@@ -156,7 +154,7 @@ export class StringComparer extends Tree<Node> {
    * Starting from deepest leafNode traversing to rootNode,
    * the method stores all index pairs as 'notChanged'
    */
-  private markNotChangedSymbols() {
+  markNotChangedSymbols() {
     const leafNode = this.getDeepestNode()
     this.forEachReversed((node) => {
       const indexPair = new Tuple(node.payload.indexA, node.payload.indexB)
@@ -169,9 +167,8 @@ export class StringComparer extends Tree<Node> {
    * Check if both of indexes in the pair are still not marked
    * and stores such indexPair as 'moved'
    */
-  private markMovedSymbols() {
+  markMovedSymbols() {
     this.forEach(node => {
-      if (node.payload.processed) return
       const currentIndexes = new Tuple(node.payload.indexA, node.payload.indexB)
       // if at leas one index from indexPair was marked as notChanged
       // we ignore the node

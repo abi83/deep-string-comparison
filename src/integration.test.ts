@@ -1,25 +1,6 @@
 import { StringComparer } from './comparer/comparer'
-import { StringDiffs } from './index'
 
 describe('Integration tests for StringComparer', () => {
-  it('Should return empty diffs for identical strings', () => {
-    const diffs = new StringComparer('abc', 'abc').getDiffs()
-    const expected: StringDiffs = {
-      aDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }],
-      bDiffs: [{ from: 0, to: 2, type: 'not_moved', value: 'abc' }]
-    }
-    expect(diffs).toEqual(expected)
-  })
-
-  it('Should not fall with empty strings', () => {
-    expect(() => {
-      new StringComparer('', '').getDiffs()
-      new StringComparer('a', '').getDiffs()
-      new StringComparer('', 'b').getDiffs()
-
-    }).not.toThrow()
-  })
-
   it('Should mark as "deleted" internal substring', () => {
     const result = new StringComparer(
       'My ==removed part== string',
