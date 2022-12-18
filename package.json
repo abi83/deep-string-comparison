@@ -1,6 +1,6 @@
 {
   "name": "deep-string-comparison",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A function to compare two strings and calculate diffs symbol by symbol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,11 +13,14 @@
     "build": "npx tsc"
   },
   "keywords": [
-    "String",
-    "Compare"
+    "string", "compare","deep", "diff"
   ],
   "author": "Vladimir Kromm",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abi83/deep-string-comparison"
+  },
   "devDependencies": {
     "@types/jest": "^28.1.4",
     "@types/node": "^18.0.3",
