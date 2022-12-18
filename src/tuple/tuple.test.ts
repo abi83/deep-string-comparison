@@ -1,4 +1,5 @@
 import { Tuple } from './tuple'
+import { ERROR_MESSAGES } from './tuple.literals'
 
 const EXPECTED_SEPARATOR = '__' //expected tuple value like "12__34"
 describe('Uni tests for Tupple class', () => {
@@ -21,19 +22,18 @@ describe('Uni tests for Tupple class', () => {
   it('Should throw an error on wrong separator', () => {
     expect(() => {
       new Tuple('12_34')
-    }).toThrow(
-      `Tuple string value should contain a valid separator: "${EXPECTED_SEPARATOR}"`)
+    }).toThrow(ERROR_MESSAGES.NO_SEPARATOR)
   })
 
   it('Should throw an error on wrong elements number in the string value', () => {
     expect(() => {
       new Tuple(`12${EXPECTED_SEPARATOR}34${EXPECTED_SEPARATOR}56`)
-    }).toThrow('Tuple can be build only from two elements')
+    }).toThrow(ERROR_MESSAGES.WRONG_LENGTH)
   })
 
   it('Should throw an error on building a tuple from NaN elements', () => {
     expect(() => {
       new Tuple(`firstValue${EXPECTED_SEPARATOR}secondValue`)
-    }).toThrow('Tuple can be build only from numbers')
+    }).toThrow(ERROR_MESSAGES.ONLY_NUMBERS)
   })
 })

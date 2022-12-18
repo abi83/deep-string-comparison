@@ -1,6 +1,7 @@
-import { Tree } from './tree/tree'
-import { Tuple } from './tuple/tuple'
+import { Tree } from '../tree/tree'
+import { Tuple } from '../tuple/tuple'
 import { GroupedDiff, StringDiffs, Node, Diff } from './comparer.types'
+import { ERROR_MESSAGES } from './comparer.literals'
 
 /**
  * Compares two strings, and returns symbol by symbol diffs.
@@ -41,27 +42,37 @@ export class StringComparer extends Tree<Node> {
    * @param maxIndexB   limitation in bString
    */
   private getDeepestNodeInArea(maxIndexA: number, maxIndexB: number): Node {
-    const inRange = (node:Node, maxA:number, maxB:number) => {
-      return node.payload.indexA < maxA && node.payload.indexB < maxB
+    const isNodeInRange = (node:Node, maxA:number, maxB:number): boolean => {
+      return node.payload.indexA < maxA &&
+             node.payload.indexB < maxB
     }
-    const comparer = (indexA:number, indexB:number): (n1:Node, n2:Node)=>number => {
+    // comparer (sort) function factory for getBestNode method
+    const comparer = (maxIndexA: number, maxIndexB: number): (n1: Node, n2: Node) => number => {
       return (nodeA: Node, nodeB: Node) => {
         if (
-          inRange(nodeA, indexA, indexB) &&
-          inRange(nodeB, indexA, indexB)
+          // none of nodes are in range
+          !isNodeInRange(nodeA, maxIndexA, maxIndexB) &&
+          !isNodeInRange(nodeB, maxIndexA, maxIndexB)
+        ) {
+          // we don't care about both and cannot say which one is better
+          return 0
+        }
+
+        if (
+          // both nodes in range
+          isNodeInRange(nodeA, maxIndexA, maxIndexB) &&
+          isNodeInRange(nodeB, maxIndexA, maxIndexB)
         ) {
           if (nodeB.depth !== nodeA.depth)
             return nodeB.depth - nodeA.depth
+          // node, closest to (indexA, indexB)
           return (nodeB.payload.indexA + nodeB.payload.indexB)
                - (nodeA.payload.indexA + nodeA.payload.indexB)
         }
-        if (
-          !inRange(nodeA, indexA, indexB) &&
-          !inRange(nodeB, indexA, indexB)
-        ) {
-          return 0
-        }
-        return Number(inRange(nodeB, indexA, indexB)) - Number(inRange(nodeA, indexA, indexB))
+
+        // return positive number for the node which is in range
+        return Number(isNodeInRange(nodeB, maxIndexA, maxIndexB))
+             - Number(isNodeInRange(nodeA, maxIndexA, maxIndexB))
       }
     }
     return this.getBestNode(comparer(maxIndexA, maxIndexB))
@@ -77,6 +88,9 @@ export class StringComparer extends Tree<Node> {
    */
   private storeEqualSymbols(indexA: number, indexB: number): void {
     const parentNode = this.getDeepestNodeInArea(indexA, indexB)
+    if(this.aString[indexA] !== this.bString[indexB]) {
+      throw new Error(ERROR_MESSAGES.NOT_EQUAL_SYMBOLS)
+    }
     const payload = {
       indexA, indexB,
       processed: false,
@@ -85,6 +99,12 @@ export class StringComparer extends Tree<Node> {
     this.createNewNode(payload, parentNode)
   }
 
+  /**
+   * Performs preliminary check of possible subsequence of equal symbols on strings start
+   * and on strings end, (which is most-likely a case)
+   * This resolves part of the string in O(n), and improve overall performance
+   * @return indexes from strings start and strings end to perform common Tree algorithm
+   */
   private preliminaryCheck() {
     let startIndex, endIndex
     for (
@@ -121,6 +141,7 @@ export class StringComparer extends Tree<Node> {
    * The idea is to find the longest path of equal symbols (nodes)
    */
   private buildTreeOfEqualSymbols() {
+    // if strings have starting (ending) common substrings, start from there
     const { startIndex, endIndex } = this.preliminaryCheck()
     for (let indexB = startIndex; indexB < this.bString.length - endIndex; indexB++) {
       for (let indexA = startIndex; indexA < this.aString.length - endIndex; indexA++) {
@@ -152,6 +173,8 @@ export class StringComparer extends Tree<Node> {
     this.forEach(node => {
       if (node.payload.processed) return
       const currentIndexes = new Tuple(node.payload.indexA, node.payload.indexB)
+      // if at leas one index from indexPair was marked as notChanged
+      // we ignore the node
       for (const notChangedIndexPair of this.notChangedIndexPairs) {
         const notChangedIndexes = new Tuple(notChangedIndexPair)
         if (
@@ -159,6 +182,8 @@ export class StringComparer extends Tree<Node> {
           notChangedIndexes.elements[1] === currentIndexes.elements[1])
           return
       }
+      // if at leas one index from indexPair was marked as movedIndexPairs already
+      // we ignore the node
       for (const movedIndexPair of this.movedIndexPairs) {
         const movedIndexes = new Tuple(movedIndexPair)
         if (

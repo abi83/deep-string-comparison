@@ -1,4 +1,5 @@
 import { BaseNode } from './tree.types'
+import { ERROR_MESSAGES } from './tree.literals'
 
 /**
  * Very basic Tree class:
@@ -80,7 +81,7 @@ export class Tree<TreeNode extends BaseNode> {
     parentNode: TreeNode
   ): void {
     if (!this.isNodeInTree(parentNode.id)) {
-      throw new Error('ParentNode is not in tree')
+      throw new Error(ERROR_MESSAGES.NOT_IN_TREE)
     }
     const id = this.nodeIds.size
     this.nodeIds.add(id)

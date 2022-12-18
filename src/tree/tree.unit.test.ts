@@ -3,6 +3,7 @@
 
 import { Tree } from './tree'
 import { BaseNode } from './tree.types'
+import { ERROR_MESSAGES } from './tree.literals'
 
 describe('Unit tests for Tree class', () => {
   const rootNodeFabric = (): BaseNode => ({
@@ -27,6 +28,16 @@ describe('Unit tests for Tree class', () => {
     }).not.toThrow()
     expect(tree.getDeepestNode().payload.testData).toEqual(999)
     expect(tree.isNodeInTree(1)).toBeTruthy()
+  })
+
+  it('Should throw an error on creatingNewNode with non-existing parent', () => {
+    const rootNode = rootNodeFabric()
+    const tree = new Tree(rootNode)
+    expect(() => {
+      tree.createNewNode({ }, {
+        id: 100, depth: 5, parentNode: rootNode, childNodes: [], payload: {}
+      })
+    }).toThrow(ERROR_MESSAGES.NOT_IN_TREE)
   })
 
   it('Should find best node by comparer function', () => {
