@@ -1,4 +1,4 @@
-import { StringComparer } from './comparer/comparer'
+import { StringComparer } from './comparator/comparator'
 
 describe('Integration tests for StringComparer', () => {
   it('Should mark as "deleted" internal substring', () => {

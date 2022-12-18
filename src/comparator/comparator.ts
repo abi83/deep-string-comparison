@@ -1,7 +1,7 @@
 import { Tree } from '../tree/tree'
 import { Tuple } from '../tuple/tuple'
 import { GroupedDiff, StringDiffs, Node, Diff } from './comparer.types'
-import { ERROR_MESSAGES } from './comparer.literals'
+import { ERROR_MESSAGES } from './comparator.literals'
 
 /**
  * Compares two strings, and returns symbol by symbol diffs.

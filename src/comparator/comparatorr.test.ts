@@ -1,5 +1,5 @@
-import { StringComparer } from './comparer'
-import { ERROR_MESSAGES } from './comparer.literals'
+import { StringComparer } from './comparator'
+import { ERROR_MESSAGES } from './comparator.literals'
 
 describe('Unit tests for comparer class', () => {
   it('Should not fall with empty strings', () => {
