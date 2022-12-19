@@ -3,7 +3,7 @@ deep-string-comparison allows you to compare two strings deeply, calculate diffe
 Algorithm complexity O(n^2), where n is a string length
 
 ```JavaScript
-import { comparator } from 'index.js'
+import { comparator } from "deep-string-comparison";
 const { aDiff, bDiff } = comparator(
   'my test string HAS data',
   'my COOL string test data'
