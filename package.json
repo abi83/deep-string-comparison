@@ -1,6 +1,6 @@
 {
   "name": "deep-string-comparison",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A function to compare two strings and calculate diffs symbol by symbol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
