@@ -23,7 +23,7 @@ Output:
 ```
 
 what is in plans:
-- publish as a npm package
+- make a package compatible with 'commonJs' modules
 - comparison of multi-line strings
 - improve output for short substrings 
 - improve performance
